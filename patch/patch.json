@@ -1,0 +1,8 @@
+{
+    "name": "Less home animations",
+    "description": "Less and faster animations on the homescreen",
+    "category": "homescreen",
+    "infos": {
+        "maintainer": "cornerman"
+    }
+}

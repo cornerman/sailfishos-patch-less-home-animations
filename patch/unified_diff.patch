@@ -1,0 +1,286 @@
+diff --git a/usr/share/lipstick-jolla-home-qt5/layers/EdgeLayer.qml b/usr/share/lipstick-jolla-home-qt5/layers/EdgeLayer.qml
+index 26e0dfd..003c32b 100644
+--- a/usr/share/lipstick-jolla-home-qt5/layers/EdgeLayer.qml
++++ b/usr/share/lipstick-jolla-home-qt5/layers/EdgeLayer.qml
+@@ -178,13 +178,13 @@ Layer {
+             NumberAnimation {
+                 target: edgeLayer
+                 property: "x"
+-                duration: 300
++                duration: 250
+                 easing.type: Easing.OutQuad
+             }
+             NumberAnimation {
+                 target: edgeLayer
+                 property: "y"
+-                duration: 300
++                duration: 250
+                 easing.type: Easing.OutQuad
+             }
+             PropertyAction {
+@@ -199,13 +199,13 @@ Layer {
+             NumberAnimation {
+                 target: edgeLayer
+                 property: "x"
+-                duration: 400
++                duration: 350
+                 easing.type: Easing.InOutQuad
+             }
+             NumberAnimation {
+                 target: edgeLayer
+                 property: "y"
+-                duration: 400
++                duration: 350
+                 easing.type: Easing.InOutQuad
+             }
+             PropertyAction {
+@@ -224,7 +224,7 @@ Layer {
+             id: hintShowAnimation
+             target: edgeLayer
+             property: "_hintProgress"
+-            duration: 300
++            duration: 250
+             to: Theme.iconSizeLauncher * 2
+             easing.type: Easing.InOutQuad
+         }
+@@ -232,7 +232,7 @@ Layer {
+         NumberAnimation {
+             target: edgeLayer
+             property: "_hintProgress"
+-            duration: 300
++            duration: 250
+             to: 0
+             easing.type: Easing.InOutQuad
+         }
+diff --git a/usr/share/lipstick-jolla-home-qt5/layers/HomeLayer.qml b/usr/share/lipstick-jolla-home-qt5/layers/HomeLayer.qml
+index 3aff868..288a385 100644
+--- a/usr/share/lipstick-jolla-home-qt5/layers/HomeLayer.qml
++++ b/usr/share/lipstick-jolla-home-qt5/layers/HomeLayer.qml
+@@ -174,18 +174,6 @@ Pannable {
+         SwitcherLayer {
+             id: switcherLayer
+ 
+-            readonly property real inactiveScale: Screen.sizeCategory >= Screen.Large ? 0.90 : 0.83
+-            readonly property bool moving: homescreen.moving
+-                        || (Desktop.instance && Desktop.instance.switcher.moving)
+-            property bool inhibitScale
+-            property real inhibitedScale
+-            onMovingChanged: {
+-                if (moving) {
+-                    inhibitedScale = scale
+-                }
+-                inhibitScale = moving
+-            }
+-
+             objectName: "switcherLayer"
+ 
+             leftItem:  eventsLayer
+@@ -194,25 +182,7 @@ Pannable {
+             width: homescreen.width
+             height: homescreen.height
+ 
+-            scale: {
+-                if (inhibitScale) {
+-                    return inhibitedScale
+-                } else if (Desktop.instance && Desktop.instance.switcher.appShowInProgress) {
+-                    return inactiveScale
+-                } else if (Lipstick.compositor.launcherLayer.exposed) {
+-                    return 1 - ((1 - inactiveScale) * Lipstick.compositor.launcherLayer.exposure)
+-                } else if (Lipstick.compositor.powerKeyLayer.exposed) {
+-                    return 1 - ((1 - inactiveScale) * Lipstick.compositor.powerKeyLayer.exposure)
+-                } else if (homescreen.active || Lipstick.compositor.topmostIsDialog) {
+-                    return 1
+-                } else {
+-                    return inactiveScale
+-                }
+-            }
+-            Behavior on scale {
+-                enabled: switcherLayer.visible
+-                NumberAnimation { duration: 250; easing.type: Easing.OutQuad }
+-            }
++            scale: 1
+ 
+             anchors { rightMargin: -rightItem.minimizeMargin }
+         }
+diff --git a/usr/share/lipstick-jolla-home-qt5/layers/LockScreenLayer.qml b/usr/share/lipstick-jolla-home-qt5/layers/LockScreenLayer.qml
+index ec8a91f..49ec198 100644
+--- a/usr/share/lipstick-jolla-home-qt5/layers/LockScreenLayer.qml
++++ b/usr/share/lipstick-jolla-home-qt5/layers/LockScreenLayer.qml
+@@ -52,8 +52,8 @@ Layer {
+         enabled: lockScreenLayer._firstLock && lockScreenLayer.exposed
+         SmoothedAnimation {
+             id: opacityAnimation
+-            duration: 400
+-            velocity: 1000 / duration
++            duration: 250
++            velocity: -1
+             onRunningChanged: {
+                 if (running) {
+                     lockScreenLayer.mergeWindows = false
+diff --git a/usr/share/lipstick-jolla-home-qt5/layers/NotificationOverviewLayer.qml b/usr/share/lipstick-jolla-home-qt5/layers/NotificationOverviewLayer.qml
+index 9227f3f..2bd9b8f 100644
+--- a/usr/share/lipstick-jolla-home-qt5/layers/NotificationOverviewLayer.qml
++++ b/usr/share/lipstick-jolla-home-qt5/layers/NotificationOverviewLayer.qml
+@@ -24,11 +24,6 @@ Layer {
+ 
+     property bool lockScreenLocked
+ 
+-    property real _launcherPosition: Math.max(Lipstick.compositor.launcherLayer.exposure, Lipstick.compositor.powerKeyLayer.exposure)
+-    Behavior on _launcherPosition {
+-        NumberAnimation { duration: 400; easing.type: Easing.OutQuad }
+-    }
+-
+     exposed: {
+         if (!hasNotifications) {
+             return false
+@@ -44,9 +39,7 @@ Layer {
+ 
+     // Behaviors must be enabled or disabled before dependent values are modified
+     property bool _positionBehaviorEnabled: {
+-        if (state == "peeking_through_launcher" ||
+-            state == "switcher-menu" ||
+-            state == "peeking_at_switcher" ||
++        if (state == "peeking_at_switcher" ||
+             state == "lockscreen_animated" ||
+             state == "lockscreen_unanimated" ||
+             state == "peeking_at_eventsview") {
+@@ -56,9 +49,7 @@ Layer {
+     }
+ 
+     property bool _opacityBehaviorEnabled: {
+-        if (state == "peeking_through_launcher" ||
+-            state == "switcher-menu" ||
+-            state == "peeking_at_switcher" ||
++        if (state == "peeking_at_switcher" ||
+             state == "lockscreen_unanimated" ||
+             state == "animate_to_eventsview" ||
+             state == "peeking_at_eventsview") {
+@@ -83,9 +74,7 @@ Layer {
+             _state == "lockscreen_unanimated") {
+             return Lipstick.compositor.lockScreenLayer.notificationOpacity
+         }
+-        if (_state == "peeking_through_launcher" ||
+-            _state == "switcher-menu" ||
+-            _state == "peeking_at_switcher" ||
++        if (_state == "peeking_at_switcher" ||
+             _state == "animate_to_eventsview") {
+             return 1
+         }
+@@ -93,11 +82,7 @@ Layer {
+     }
+ 
+     property real _x: {
+-        if (_state == "switcher-menu") {
+-            return notifications.visiblePosition - ((1 - root._launcherPosition) * notifications.margin)
+-        }
+-        if (_state == "peeking_through_launcher" ||
+-            _state == "peeking_at_switcher" ||
++        if (_state == "peeking_at_switcher" ||
+             _state == "lockscreen_animated" ||
+             _state == "lockscreen_unanimated") {
+             return notifications.visiblePosition
+@@ -112,23 +97,9 @@ Layer {
+ 
+     states: [
+         State {
+-            name: "peeking_through_launcher"
+-            when: Lipstick.compositor.switcherLayer.isCurrentItem
+-                    && Lipstick.compositor.launcherLayer.exposed
+-                    && Lipstick.compositor.homePeeking
+-                    && !lipstickSettings.lockscreenVisible
+-        },
+-        State {
+-            name: "switcher-menu"
+-            when: Lipstick.compositor.switcherLayer.isCurrentItem
+-                    && (Lipstick.compositor.launcherLayer.exposed || Lipstick.compositor.powerKeyLayer.exposed)
+-                    && !lipstickSettings.lockscreenVisible
+-        },
+-        State {
+             name: "peeking_at_switcher"
+             when: Lipstick.compositor.homeLayer.currentItem == Lipstick.compositor.switcherLayer
+-                  && ((Lipstick.compositor.peekingLayer.exposed && Lipstick.compositor.peekingAtHome && !lockScreenLocked)
+-                        || (Lipstick.compositor.launcherPeeking && !Lipstick.compositor.homeLayer.active && !lockScreenLocked))
++                  && ((Lipstick.compositor.peekingLayer.exposed && Lipstick.compositor.peekingAtHome && !lockScreenLocked))
+         },
+         State {
+             // LockScreenLayer can be locked below the running application. Notification opacity and position
+diff --git a/usr/share/lipstick-jolla-home-qt5/layers/StackLayer.qml b/usr/share/lipstick-jolla-home-qt5/layers/StackLayer.qml
+index ad180cc..8d8cc27 100644
+--- a/usr/share/lipstick-jolla-home-qt5/layers/StackLayer.qml
++++ b/usr/share/lipstick-jolla-home-qt5/layers/StackLayer.qml
+@@ -285,11 +285,11 @@ Layer {
+         // Allow some time for the application to respond to the visibility change before
+         // capturing the fade in snapshot.  This is the same amount of time it takes the
+         // switcher scale animation to complete so the animations will appear sequential.
+-        PauseAnimation { id: delayAnimation; duration: 250 }
++        PauseAnimation { duration: showAnimation.retries == 0 ? 20 : 1000 }
+         ScriptAction {
+             script: {
+                 if (active) {
+-                    if (layer.window.mapped || ++showAnimation.retries >= 4) {
++                    if (layer.window.mapped || ++showAnimation.retries > 1) {
+                         showAnimation.retries = 0
+                         if (layer.mergeWindows) {
+                             layer.cacheWindow(layer.window)
+@@ -309,7 +309,7 @@ Layer {
+         NumberAnimation {
+             target: layer
+             property: "opacity"
+-            duration: 400
++            duration: 350
+             from: 0.0
+             to: 1.0
+             easing.type: Easing.InOutQuad
+@@ -320,7 +320,8 @@ Layer {
+         target: layer.window
+         onMappedChanged: {
+             if (layer.window.mapped && showAnimation.retries > 0) {
+-                delayAnimation.complete()
++                showAnimation.retries = 0
++                showAnimation.restart()
+             }
+         }
+     }
+diff --git a/usr/share/lipstick-jolla-home-qt5/lockscreen/LockScreen.qml b/usr/share/lipstick-jolla-home-qt5/lockscreen/LockScreen.qml
+index 6171b73..f50504f 100644
+--- a/usr/share/lipstick-jolla-home-qt5/lockscreen/LockScreen.qml
++++ b/usr/share/lipstick-jolla-home-qt5/lockscreen/LockScreen.qml
+@@ -297,13 +297,9 @@ ApplicationWindow {
+                             && Lipstick.compositor.systemInitComplete) {
+                         lockItem.reset()
+                         deviceLockContainer.opacity = 0.0
+-                        if (Lipstick.compositor.notificationOverviewLayer.hasNotifications) {
+-                            Lipstick.compositor.lockScreenLayer.notificationAnimation = "animated"
+-                            Lipstick.compositor.wallpaper.dim()
+-                        } else {
+-                            Lipstick.compositor.lockScreenLayer.notificationAnimation = "immediate"
+-                            Lipstick.compositor.goToEvents()
+-                        }
++
++                        Lipstick.compositor.lockScreenLayer.notificationAnimation = "immediate"
++                        Lipstick.compositor.goToEvents()
+                     } else {
+                         lockItem.reset()
+                         Lipstick.compositor.goToSwitcher(false)
+diff --git a/usr/share/lipstick-jolla-home-qt5/switcher/SwitcherItem.qml b/usr/share/lipstick-jolla-home-qt5/switcher/SwitcherItem.qml
+index 1d0f0f0..0221bce 100644
+--- a/usr/share/lipstick-jolla-home-qt5/switcher/SwitcherItem.qml
++++ b/usr/share/lipstick-jolla-home-qt5/switcher/SwitcherItem.qml
+@@ -204,7 +204,7 @@ EditableGridDelegate {
+         }
+ 
+         Behavior on opacity {
+-            FadeAnimation { id: coverOpacityAnimation; duration: 500 }
++            FadeAnimation { id: coverOpacityAnimation; duration: 350 }
+         }
+     }
+ 
+@@ -215,7 +215,7 @@ EditableGridDelegate {
+         icon: launcherItem ? launcherItem.iconId : ""
+         layer.effect: null
+         opacity: hideCover ? 1.0 : 0.0
+-        Behavior on opacity { FadeAnimation { duration: 500 } }
++        Behavior on opacity { FadeAnimation { duration: 350 } }
+     }
+ 
+     Loader {
