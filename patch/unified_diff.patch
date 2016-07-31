@@ -103,20 +103,18 @@ index 3aff868..288a385 100644
              anchors { rightMargin: -rightItem.minimizeMargin }
          }
 diff --git a/usr/share/lipstick-jolla-home-qt5/layers/LockScreenLayer.qml b/usr/share/lipstick-jolla-home-qt5/layers/LockScreenLayer.qml
-index ec8a91f..49ec198 100644
+index ec8a91f..b8971b1 100644
 --- a/usr/share/lipstick-jolla-home-qt5/layers/LockScreenLayer.qml
 +++ b/usr/share/lipstick-jolla-home-qt5/layers/LockScreenLayer.qml
-@@ -52,8 +52,8 @@ Layer {
+@@ -52,7 +52,7 @@ Layer {
          enabled: lockScreenLayer._firstLock && lockScreenLayer.exposed
          SmoothedAnimation {
              id: opacityAnimation
 -            duration: 400
--            velocity: 1000 / duration
 +            duration: 250
-+            velocity: -1
+             velocity: 1000 / duration
              onRunningChanged: {
                  if (running) {
-                     lockScreenLayer.mergeWindows = false
 diff --git a/usr/share/lipstick-jolla-home-qt5/layers/NotificationOverviewLayer.qml b/usr/share/lipstick-jolla-home-qt5/layers/NotificationOverviewLayer.qml
 index 9227f3f..2bd9b8f 100644
 --- a/usr/share/lipstick-jolla-home-qt5/layers/NotificationOverviewLayer.qml
@@ -205,7 +203,7 @@ index 9227f3f..2bd9b8f 100644
          State {
              // LockScreenLayer can be locked below the running application. Notification opacity and position
 diff --git a/usr/share/lipstick-jolla-home-qt5/layers/StackLayer.qml b/usr/share/lipstick-jolla-home-qt5/layers/StackLayer.qml
-index ad180cc..8d8cc27 100644
+index ad180cc..a12d149 100644
 --- a/usr/share/lipstick-jolla-home-qt5/layers/StackLayer.qml
 +++ b/usr/share/lipstick-jolla-home-qt5/layers/StackLayer.qml
 @@ -285,11 +285,11 @@ Layer {
@@ -213,7 +211,7 @@ index ad180cc..8d8cc27 100644
          // capturing the fade in snapshot.  This is the same amount of time it takes the
          // switcher scale animation to complete so the animations will appear sequential.
 -        PauseAnimation { id: delayAnimation; duration: 250 }
-+        PauseAnimation { duration: showAnimation.retries == 0 ? 20 : 1000 }
++        PauseAnimation { duration: showAnimation.retries == 0 ? 20 : (layer.window.mapped ? 0 : 1000) }
          ScriptAction {
              script: {
                  if (active) {
@@ -262,6 +260,50 @@ index 6171b73..f50504f 100644
                      } else {
                          lockItem.reset()
                          Lipstick.compositor.goToSwitcher(false)
+diff --git a/usr/share/lipstick-jolla-home-qt5/main/Pannable.qml b/usr/share/lipstick-jolla-home-qt5/main/Pannable.qml
+index 9f4e1b3..15681b8 100644
+--- a/usr/share/lipstick-jolla-home-qt5/main/Pannable.qml
++++ b/usr/share/lipstick-jolla-home-qt5/main/Pannable.qml
+@@ -243,7 +243,7 @@ Item {
+         id: horizontalAnimation
+         target: pannable.currentItem
+         properties: "x"
+-        duration: 300
++        duration: 250
+         to: 0
+         running: false
+         easing.type: Easing.OutQuad
+@@ -259,7 +259,7 @@ Item {
+         id: verticalAnimation
+         target: pannable.currentItem
+         properties: "y"
+-        duration: 300
++        duration: 250
+         to: 0
+         running: false
+         easing.type: Easing.OutQuad
+diff --git a/usr/share/lipstick-jolla-home-qt5/main/PeekArea.qml b/usr/share/lipstick-jolla-home-qt5/main/PeekArea.qml
+index ad23b68..9946ed3 100644
+--- a/usr/share/lipstick-jolla-home-qt5/main/PeekArea.qml
++++ b/usr/share/lipstick-jolla-home-qt5/main/PeekArea.qml
+@@ -66,7 +66,7 @@ Item {
+     Behavior on opacity {
+         id: opacityBehavior
+         enabled: false
+-        SmoothedAnimation { id: opacityAnimation; duration: 400; velocity: 1000 / duration }
++        SmoothedAnimation { id: opacityAnimation; duration: 300; velocity: 1000 / duration }
+     }
+ 
+     StackItem {
+@@ -102,7 +102,7 @@ Item {
+             opacityBehavior.enabled = false
+             if (peekFilter.closing) {
+                 peekArea._closeAnimating = true
+-                clipEndAnimation.duration = 400
++                clipEndAnimation.duration = 300
+             } else {
+                 clipEndAnimation.duration = 200
+                 clipEndAnimation.to = 0
 diff --git a/usr/share/lipstick-jolla-home-qt5/switcher/SwitcherItem.qml b/usr/share/lipstick-jolla-home-qt5/switcher/SwitcherItem.qml
 index 1d0f0f0..0221bce 100644
 --- a/usr/share/lipstick-jolla-home-qt5/switcher/SwitcherItem.qml
