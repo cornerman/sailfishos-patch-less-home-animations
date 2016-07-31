@@ -268,10 +268,37 @@ index 265e1ab..1ace827 100644
                  clipEndAnimation.duration = 200
                  clipEndAnimation.to = 0
 diff --git a/usr/share/lipstick-jolla-home-qt5/switcher/SwitcherItem.qml b/usr/share/lipstick-jolla-home-qt5/switcher/SwitcherItem.qml
-index b6c281a..41d2d38 100644
+index b6c281a..2d47e5d 100644
 --- a/usr/share/lipstick-jolla-home-qt5/switcher/SwitcherItem.qml
 +++ b/usr/share/lipstick-jolla-home-qt5/switcher/SwitcherItem.qml
-@@ -187,7 +187,7 @@ EditableGridDelegate {
+@@ -119,26 +119,6 @@ EditableGridDelegate {
+         }
+     }
+ 
+-    Connections {
+-        target: wrapper.currentApp ? Lipstick.compositor : null
+-        ignoreUnknownSignals: true
+-        onHomePeekingChanged: {
+-            if (Lipstick.compositor.homePeeking && !wrapper.closing) {
+-                contentItem.opacity = 0.0
+-                homePeekAnimation.restart()
+-            }
+-        }
+-    }
+-    SequentialAnimation {
+-        id: homePeekAnimation
+-        PauseAnimation { duration: 200 }
+-        FadeAnimation {
+-            target: contentItem
+-            duration: 400
+-            to: 1.0
+-        }
+-    }
+-
+     property bool hideCover: wrapper.launching || startupTimer.running || !windowPixmap.hasPixmap
+     property real coverOpacity: hideCover ? 0.0 : (!running ? 0.6 : 1.0)
+ 
+@@ -187,7 +167,7 @@ EditableGridDelegate {
          }
  
          Behavior on opacity {
@@ -280,7 +307,7 @@ index b6c281a..41d2d38 100644
          }
      }
  
-@@ -198,7 +198,7 @@ EditableGridDelegate {
+@@ -198,7 +178,7 @@ EditableGridDelegate {
          icon: launcherItem ? launcherItem.iconId : ""
          layer.effect: null
          opacity: hideCover ? 1.0 : 0.0
@@ -289,3 +316,12 @@ index b6c281a..41d2d38 100644
      }
  
      Loader {
+@@ -227,7 +207,7 @@ EditableGridDelegate {
+     Rectangle {
+         color: Theme.highlightBackgroundColor
+         anchors.fill: parent
+-        opacity: ((currentApp && !Lipstick.compositor.homePeeking) || windowMapPending || launching || wrapper.closing) ? 0.4 : (contentItem.pressed ? Theme.highlightBackgroundOpacity : 0)
++        opacity: (currentApp || windowMapPending || (launching && !minimized) || wrapper.closing) ? 0.4 : (contentItem.pressed ? Theme.highlightBackgroundOpacity : 0)
+         radius: windowPixmap.radius
+         Behavior on opacity {
+             enabled: !contentItem.pressed
