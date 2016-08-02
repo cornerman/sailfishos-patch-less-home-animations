@@ -1,3 +1,20 @@
+diff --git a/usr/share/lipstick-jolla-home-qt5/eventsview/EventsViewList.qml b/usr/share/lipstick-jolla-home-qt5/eventsview/EventsViewList.qml
+index 76e2afc..a544037 100644
+--- a/usr/share/lipstick-jolla-home-qt5/eventsview/EventsViewList.qml
++++ b/usr/share/lipstick-jolla-home-qt5/eventsview/EventsViewList.qml
+@@ -213,7 +213,11 @@ SilicaFlickable {
+         x: notificationsArea.x
+         y: Math.max(headerColumn.y + headerColumn.height + Theme.itemSizeSmall, root.height/2 - height/2)
+         width: notificationsArea.width
+-        enabled: !root.hasNotifications && notificationList.contentHeight < 1 && !feedsList.showingRemovableContent
++        property bool shouldShow: !root.hasNotifications && notificationList.contentHeight < 1 && !feedsList.showingRemovableContent
++        opacity: shouldShow ? 1 : 0
++        enabled: shouldShow
++
++        Behavior on opacity { FadeAnimation { duration: 250 } }
+ 
+         //% "You don't have any notifications right now"
+         text: qsTrId("lipstick-jolla-home-la-you_dont_have_any_notifications")
 diff --git a/usr/share/lipstick-jolla-home-qt5/layers/EdgeLayer.qml b/usr/share/lipstick-jolla-home-qt5/layers/EdgeLayer.qml
 index 26e0dfd..003c32b 100644
 --- a/usr/share/lipstick-jolla-home-qt5/layers/EdgeLayer.qml

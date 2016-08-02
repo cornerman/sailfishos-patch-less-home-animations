@@ -13,3 +13,4 @@ Features:
 - Do not show notifications on switcher when opening launcher or powermenu
 - Only highlight one switcher item: the focused or to-be-focused app
 - No highlight animation for current app when peeking
+- Always show 'no notifications' message on events view if there are no events
