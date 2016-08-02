@@ -1,7 +1,7 @@
 Name: sailfishos-patch-less-home-animations
 BuildArch: noarch
 Summary: Less and faster animations on the homescreen
-Version: 0.0.1
+Version: 0.1.0
 Release: 1
 Group: System/Patches
 License: TODO
