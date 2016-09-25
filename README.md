@@ -1,6 +1,6 @@
 # Less home animations
 
-Only tested with SailfishOS 2.0.2.48
+Based on SailfishOS 2.0.2.48/2.0.2.51
 
 Less and faster animations on the homescreen.
 
@@ -8,7 +8,6 @@ Features:
 - No zooming of switcher
 - Faster show animation for apps
 - No animated eventsview when coming from lockscreen
-- Faster fade-out animation of lockscreen
 - A bit faster show/hide animation for launcher and powermenu
 - Do not show notifications on switcher when opening launcher or powermenu
 - Only highlight one switcher item: the focused or to-be-focused app
