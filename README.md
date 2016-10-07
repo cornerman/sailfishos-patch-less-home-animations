@@ -1,6 +1,6 @@
 # Less home animations
 
-Based on SailfishOS 2.0.2.48/2.0.2.51
+Based on SailfishOS 2.0.4.13
 
 Less and faster animations on the homescreen.
 
