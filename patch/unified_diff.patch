@@ -191,7 +191,7 @@ index 9227f3f..e3e2123 100644
          State {
              // LockScreenLayer can be locked below the running application. Notification opacity and position
 diff --git a/usr/share/lipstick-jolla-home-qt5/layers/StackLayer.qml b/usr/share/lipstick-jolla-home-qt5/layers/StackLayer.qml
-index 52e7613..0c2080d 100644
+index 52e7613..5daf66c 100644
 --- a/usr/share/lipstick-jolla-home-qt5/layers/StackLayer.qml
 +++ b/usr/share/lipstick-jolla-home-qt5/layers/StackLayer.qml
 @@ -329,11 +329,11 @@ Layer {
@@ -199,7 +199,7 @@ index 52e7613..0c2080d 100644
          // capturing the fade in snapshot.  This is the same amount of time it takes the
          // switcher scale animation to complete so the animations will appear sequential.
 -        PauseAnimation { id: delayAnimation; duration: 250 }
-+        PauseAnimation { duration: showAnimation.retries == 0 ? 20 : (layer.window.mapped ? 0 : 1000) }
++        PauseAnimation { duration: showAnimation.retries == 0 ? 5 : (layer.window.mapped ? 0 : 1000) }
          ScriptAction {
              script: {
                  if (active) {
@@ -217,11 +217,13 @@ index 52e7613..0c2080d 100644
              from: 0.0
              to: 1.0
              easing.type: Easing.InOutQuad
-@@ -363,7 +363,8 @@ Layer {
+@@ -362,8 +362,9 @@ Layer {
+     Connections {
          target: layer.window
          onMappedChanged: {
-             if (layer.window.mapped && showAnimation.retries > 0) {
+-            if (layer.window.mapped && showAnimation.retries > 0) {
 -                delayAnimation.complete()
++            if (layer.window.mapped) {
 +                showAnimation.retries = 0
 +                showAnimation.restart()
              }
