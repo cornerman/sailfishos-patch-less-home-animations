@@ -1,22 +1,5 @@
-diff --git a/usr/share/lipstick-jolla-home-qt5/eventsview/EventsViewList.qml b/usr/share/lipstick-jolla-home-qt5/eventsview/EventsViewList.qml
-index 59eed58..6b56927 100644
---- a/usr/share/lipstick-jolla-home-qt5/eventsview/EventsViewList.qml
-+++ b/usr/share/lipstick-jolla-home-qt5/eventsview/EventsViewList.qml
-@@ -213,7 +213,11 @@ SilicaFlickable {
-         x: notificationsArea.x
-         y: Math.max(headerColumn.y + headerColumn.height + Theme.itemSizeSmall, root.height/2 - height/2)
-         width: notificationsArea.width
--        enabled: !root.hasNotifications && notificationList.contentHeight < 1 && !feedsList.showingRemovableContent
-+        property bool shouldShow: !root.hasNotifications && notificationList.contentHeight < 1 && !feedsList.showingRemovableContent
-+        opacity: shouldShow ? 1 : 0
-+        enabled: shouldShow
-+
-+        Behavior on opacity { FadeAnimation { duration: 250 } }
- 
-         //% "You don't have any notifications right now"
-         text: qsTrId("lipstick-jolla-home-la-you_dont_have_any_notifications")
 diff --git a/usr/share/lipstick-jolla-home-qt5/layers/EdgeLayer.qml b/usr/share/lipstick-jolla-home-qt5/layers/EdgeLayer.qml
-index 26e0dfd..003c32b 100644
+index 26e0dfd..c32a973 100644
 --- a/usr/share/lipstick-jolla-home-qt5/layers/EdgeLayer.qml
 +++ b/usr/share/lipstick-jolla-home-qt5/layers/EdgeLayer.qml
 @@ -178,13 +178,13 @@ Layer {
@@ -40,14 +23,14 @@ index 26e0dfd..003c32b 100644
                  target: edgeLayer
                  property: "x"
 -                duration: 400
-+                duration: 350
++                duration: 300
                  easing.type: Easing.InOutQuad
              }
              NumberAnimation {
                  target: edgeLayer
                  property: "y"
 -                duration: 400
-+                duration: 350
++                duration: 300
                  easing.type: Easing.InOutQuad
              }
              PropertyAction {
@@ -70,7 +53,7 @@ index 26e0dfd..003c32b 100644
              easing.type: Easing.InOutQuad
          }
 diff --git a/usr/share/lipstick-jolla-home-qt5/layers/HomeLayer.qml b/usr/share/lipstick-jolla-home-qt5/layers/HomeLayer.qml
-index 188bdf3..595bdb2 100644
+index 1e234af..8a8c821 100644
 --- a/usr/share/lipstick-jolla-home-qt5/layers/HomeLayer.qml
 +++ b/usr/share/lipstick-jolla-home-qt5/layers/HomeLayer.qml
 @@ -202,18 +202,6 @@ Pannable {
@@ -181,10 +164,11 @@ index 9227f3f..e3e2123 100644
              _state == "lockscreen_animated" ||
              _state == "lockscreen_unanimated") {
              return notifications.visiblePosition
-@@ -112,23 +97,9 @@ Layer {
+@@ -111,24 +96,10 @@ Layer {
+     }
  
      states: [
-         State {
+-        State {
 -            name: "peeking_through_launcher"
 -            when: Lipstick.compositor.switcherLayer.isCurrentItem
 -                    && Lipstick.compositor.launcherLayer.exposed
@@ -197,7 +181,7 @@ index 9227f3f..e3e2123 100644
 -                    && (Lipstick.compositor.launcherLayer.exposed || Lipstick.compositor.powerKeyLayer.exposed)
 -                    && !lipstickSettings.lockscreenVisible
 -        },
--        State {
+         State {
              name: "peeking_at_switcher"
              when: Lipstick.compositor.homeLayer.currentItem == Lipstick.compositor.switcherLayer
 -                  && ((Lipstick.compositor.peekingLayer.exposed && Lipstick.compositor.peekingAtHome && !lockScreenLocked)
@@ -207,7 +191,7 @@ index 9227f3f..e3e2123 100644
          State {
              // LockScreenLayer can be locked below the running application. Notification opacity and position
 diff --git a/usr/share/lipstick-jolla-home-qt5/layers/StackLayer.qml b/usr/share/lipstick-jolla-home-qt5/layers/StackLayer.qml
-index 52e7613..9498e31 100644
+index 52e7613..0c2080d 100644
 --- a/usr/share/lipstick-jolla-home-qt5/layers/StackLayer.qml
 +++ b/usr/share/lipstick-jolla-home-qt5/layers/StackLayer.qml
 @@ -329,11 +329,11 @@ Layer {
@@ -229,7 +213,7 @@ index 52e7613..9498e31 100644
          FadeAnimator {
              target: layer
 -            duration: 400
-+            duration: 350
++            duration: 300
              from: 0.0
              to: 1.0
              easing.type: Easing.InOutQuad
@@ -244,14 +228,14 @@ index 52e7613..9498e31 100644
          }
      }
 diff --git a/usr/share/lipstick-jolla-home-qt5/lockscreen/LockScreen.qml b/usr/share/lipstick-jolla-home-qt5/lockscreen/LockScreen.qml
-index f923f73..bdb2b3d 100644
+index 61cf45b..638f775 100644
 --- a/usr/share/lipstick-jolla-home-qt5/lockscreen/LockScreen.qml
 +++ b/usr/share/lipstick-jolla-home-qt5/lockscreen/LockScreen.qml
-@@ -345,12 +345,8 @@ ApplicationWindow {
+@@ -433,12 +433,8 @@ ApplicationWindow {
                              && Lipstick.compositor.systemInitComplete) {
                          lockItem.reset()
                          deviceLockContainer.opacity = 0.0
--                        if (Lipstick.compositor.notificationOverviewLayer.hasNotifications) {
+-                        if (Lipstick.compositor.notificationOverviewLayer.hasNotifications && overshoot > 0) {
 -                            Lipstick.compositor.lockScreenLayer.notificationAnimation = "animated"
 -                        } else {
 -                            Lipstick.compositor.lockScreenLayer.notificationAnimation = "immediate"
@@ -285,7 +269,7 @@ index 46c8edc..2ad16b6 100644
                  clipEndAnimation.duration = 200
                  clipEndAnimation.to = 0
 diff --git a/usr/share/lipstick-jolla-home-qt5/switcher/SwitcherItem.qml b/usr/share/lipstick-jolla-home-qt5/switcher/SwitcherItem.qml
-index b6c281a..2d47e5d 100644
+index 4eb554c..10df969 100644
 --- a/usr/share/lipstick-jolla-home-qt5/switcher/SwitcherItem.qml
 +++ b/usr/share/lipstick-jolla-home-qt5/switcher/SwitcherItem.qml
 @@ -119,26 +119,6 @@ EditableGridDelegate {

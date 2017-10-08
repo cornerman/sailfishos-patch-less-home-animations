@@ -1,6 +1,6 @@
 # Less home animations
 
-Based on SailfishOS 2.0.4.13
+Based on SailfishOS 2.1.2.3
 
 Less and faster animations on the homescreen.
 
@@ -12,4 +12,3 @@ Features:
 - Do not show notifications on switcher when opening launcher or powermenu
 - Only highlight one switcher item: the focused or to-be-focused app
 - No highlight animation for current app when peeking
-- Always show 'no notifications' message on events view if there are no events
